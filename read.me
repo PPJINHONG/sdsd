@@ -1,70 +1,26 @@
 #!/bin/bash
 
-# OpenStack CLI가 설정된 환경에서 실행 (OS_AUTH_URL 등)
+# 사용법: ./get_vm_ip.sh vm_name_list.txt
 
-echo "vm_name,vm_id,ips,volume_id,volume_name,volume_type"
+LIST_FILE="$1"
 
-# 1) 모든 VM ID 가져오기 (전체 프로젝트 기준)
-for sid in $(openstack server list --all-projects -f value -c ID); do
-    # 서버 정보 JSON으로 저장
-    tmp_server=$(mktemp)
-    openstack server show "$sid" -f json > "$tmp_server" 2>/dev/null
+if [ -z "$LIST_FILE" ] || [ ! -f "$LIST_FILE" ]; then
+  echo "사용법: $0 <vm_name_list_file>"
+  exit 1
+fi
 
-    # VM 이름
-    vm_name=$(python3 - <<EOF
-import json
-d = json.load(open("$tmp_server"))
-print(d.get("name", ""))
-EOF
-)
+while IFS= read -r VMNAME; do
+  # 빈 줄은 스킵
+  [ -z "$VMNAME" ] && continue
 
-    # VM IP (addresses 필드: "net1=10.0.0.5, 192.168.0.10" 같은 문자열)
-    ips=$(python3 - <<EOF
-import json
-d = json.load(open("$tmp_server"))
-addr = d.get("addresses", "")
-# CSV 안에서 콤마랑 안 섞이게 콤마를 세미콜론으로 치환
-print(addr.replace(",", ";"))
-EOF
-)
+  # VM의 addresses 필드 가져오기
+  ADDR=$(openstack server show "$VMNAME" -f value -c addresses 2>/dev/null)
 
-    # 붙어있는 볼륨 ID 리스트 (공백으로 join)
-    vols=$(python3 - <<EOF
-import json
-d = json.load(open("$tmp_server"))
-vols = d.get("os-extended-volumes:volumes_attached", [])
-ids = [v.get("id", "") for v in vols if "id" in v]
-print(" ".join(ids))
-EOF
-)
-
-    rm -f "$tmp_server"
-
-    # 볼륨이 하나도 없으면 스킵
-    if [ -z "$vols" ]; then
-        continue
-    fi
-
-    # 2) 각 볼륨에 대해 이름 / 타입 조회
-    for vid in $vols; do
-        tmp_vol=$(mktemp)
-        openstack volume show "$vid" -f json > "$tmp_vol" 2>/dev/null
-
-        vol_info=$(python3 - <<EOF
-import json
-d = json.load(open("$tmp_vol"))
-name = d.get("name", "")
-vtype = d.get("volume_type", "")
-print(name)
-print(vtype)
-EOF
-)
-        rm -f "$tmp_vol"
-
-        vol_name=$(echo "$vol_info" | sed -n '1p')
-        vol_type=$(echo "$vol_info" | sed -n '2p')
-
-        # 최종 CSV 한 줄 출력
-        echo "$vm_name,$sid,$ips,$vid,$vol_name,$vol_type"
-    done
-done
+  # 못 찾은 경우 표시
+  if [ -z "$ADDR" ]; then
+    echo "$VMNAME  (NOT FOUND)"
+  else
+    # 그냥 "VM이름 IP정보" 형태로 출력
+    echo "$VMNAME  $ADDR"
+  fi
+done < "$LIST_FILE"
