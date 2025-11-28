@@ -1,7 +1,5 @@
 #!/bin/bash
 
-# 사용법: ./get_vm_ip.sh vm_name_list.txt
-
 LIST_FILE="$1"
 
 if [ -z "$LIST_FILE" ] || [ ! -f "$LIST_FILE" ]; then
@@ -9,18 +7,37 @@ if [ -z "$LIST_FILE" ] || [ ! -f "$LIST_FILE" ]; then
   exit 1
 fi
 
+# 전체 VM 정보 JSON으로 수집 (단 1번!)
+tmp_all=$(mktemp)
+openstack server list --all-projects --long -f json > "$tmp_all"
+
+# CSV 헤더
+echo "vm_name,ips"
+
 while IFS= read -r VMNAME; do
-  # 빈 줄은 스킵
   [ -z "$VMNAME" ] && continue
 
-  # VM의 addresses 필드 가져오기
-  ADDR=$(openstack server show "$VMNAME" -f value -c addresses 2>/dev/null)
+  # Python으로 JSON에서 해당 VM 정보 찾기
+  result=$(python3 <<EOF
+import json
+vms = json.load(open("$tmp_all"))
+ips = ""
+for vm in vms:
+    if vm.get("Name") == "$VMNAME":
+        ips = vm.get("Networks", "")
+        break
+print(ips)
+EOF
+)
 
-  # 못 찾은 경우 표시
-  if [ -z "$ADDR" ]; then
-    echo "$VMNAME  (NOT FOUND)"
+  if [ -z "$result" ]; then
+    echo "$VMNAME,(NOT FOUND)"
   else
-    # 그냥 "VM이름 IP정보" 형태로 출력
-    echo "$VMNAME  $ADDR"
+    # Networks 값에서 공백 제거
+    ip_clean=$(echo "$result" | tr -d ' ')
+    echo "$VMNAME,$ip_clean"
   fi
+
 done < "$LIST_FILE"
+
+rm -f "$tmp_all"
