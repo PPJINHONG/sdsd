@@ -1,24 +1,24 @@
 #!/bin/bash
 
-# 1) 모든 share ID 가져오기
-# manila list --all 의 출력 형식을 표준화하기 위해 -f value 사용
+# 모든 share ID 가져오기
 SHARES=$(manila list --all -f value -c ID)
 
-# 2) CSV 헤더
 echo "share_id,share_name,access_id,access_type,access_to,access_level,state"
 
-# 3) 각 share 에 대해 access-list 호출
 for sid in $SHARES; do
-    # share 이름도 같이 가져옴 (원하면 생략해도 됨)
     sname=$(manila show "$sid" -f value -c name 2>/dev/null)
 
-    # access-list 를 CSV 로 출력해서 한 줄씩 처리
-    # - id / access_type / access_to / access_level / state 컬럼 사용
+    tmpfile=$(mktemp)
+
+    # access-list 임시 파일 저장
     manila access-list "$sid" -f csv \
-        -c id -c access_type -c access_to -c access_level -c state 2>/dev/null \
-    | tail -n +2 \           # 헤더 줄 스킵
-    | while IFS= read -r line; do
-        # 앞에 share_id, share_name 붙여서 한 줄로 만듦
+        -c id -c access_type -c access_to -c access_level -c state \
+        > "$tmpfile" 2>/dev/null
+
+    # 헤더 삭제 후 읽기
+    tail -n +2 "$tmpfile" | while IFS= read -r line; do
         echo "$sid,$sname,$line"
     done
+
+    rm -f "$tmpfile"
 done
