@@ -1,43 +1,6 @@
-#!/bin/bash
-
-LIST_FILE="$1"
-
-if [ -z "$LIST_FILE" ] || [ ! -f "$LIST_FILE" ]; then
-  echo "사용법: $0 <vm_name_list_file>"
-  exit 1
-fi
-
-# 전체 VM 정보 JSON으로 수집 (단 1번!)
-tmp_all=$(mktemp)
-openstack server list --all-projects --long -f json > "$tmp_all"
-
-# CSV 헤더
-echo "vm_name,ips"
-
-while IFS= read -r VMNAME; do
-  [ -z "$VMNAME" ] && continue
-
-  # Python으로 JSON에서 해당 VM 정보 찾기
-  result=$(python3 <<EOF
-import json
-vms = json.load(open("$tmp_all"))
-ips = ""
-for vm in vms:
-    if vm.get("Name") == "$VMNAME":
-        ips = vm.get("Networks", "")
-        break
-print(ips)
-EOF
-)
-
-  if [ -z "$result" ]; then
-    echo "$VMNAME,(NOT FOUND)"
-  else
-    # Networks 값에서 공백 제거
-    ip_clean=$(echo "$result" | tr -d ' ')
-    echo "$VMNAME,$ip_clean"
-  fi
-
-done < "$LIST_FILE"
-
-rm -f "$tmp_all"
+ansible -i hostlist all -u aa -b -m shell '
+HN=$(hostname);
+PN=$(ipmitool fru print | awk -F": *" "/Product Name/{print \$2; exit}");
+PS=$(ipmitool fru print | awk -F": *" "/Product Serial/{print \$2; exit}");
+echo "$HN,$PN,$PS"
+'
