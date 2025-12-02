@@ -4,3 +4,7 @@ PN=$(ipmitool fru print | awk -F": *" "/Product Name/{print \$2; exit}");
 PS=$(ipmitool fru print | awk -F": *" "/Product Serial/{print \$2; exit}");
 echo "$HN,$PN,$PS"
 '
+ansible -i hostlist all -u aa -b -K -m shell '
+echo Host: $(hostname);
+sudo ipmitool fru print | grep -E "Product Name|Product Serial"
+'
