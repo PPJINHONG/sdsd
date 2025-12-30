@@ -4,20 +4,20 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>업무 사이트 링크 관리</title>
+
   <style>
     :root{
-      /* ChatGPT 느낌의 다크 */
       --bg:#0b0f14;
-      --panel:#111827;      /* 살짝 푸른검정 */
+      --panel:#111827;
       --panel2:#0f172a;
       --text:#e5e7eb;
       --muted:#9ca3af;
       --line:#243244;
-      --accent:#7dd3fc;     /* 링크 색 */
-      --shadow: 0 10px 30px rgba(0,0,0,.35);
-      --radius: 14px;
-      --font: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
-      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      --accent:#7dd3fc;
+      --shadow:0 10px 30px rgba(0,0,0,.35);
+      --radius:14px;
+      --font:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,"Apple SD Gothic Neo","Noto Sans KR",sans-serif;
+      --mono:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono",monospace;
     }
     *{box-sizing:border-box}
     body{
@@ -26,72 +26,67 @@
       background:var(--bg);
       color:var(--text);
     }
+
+    /* ✅ 상단/하단 왼쪽 기준선 통일 컨테이너 */
+    .container{
+      max-width:1200px;
+      margin:0 auto;
+      padding:14px 16px; /* 이 패딩이 기준선 */
+    }
+
     header{
       position:sticky; top:0; z-index:10;
       background:rgba(11,15,20,.92);
       border-bottom:1px solid rgba(36,50,68,.65);
-      backdrop-filter: blur(8px);
+      backdrop-filter:blur(8px);
     }
-    .wrap{max-width:1200px; margin:0 auto; padding:14px 16px;}
-    h1{
-      margin:0;
-      font-size:18px;
-      letter-spacing:-.2px;
-    }
+    h1{margin:0;font-size:18px;letter-spacing:-.2px}
 
     .toolbar{
       margin-top:10px;
-      display:flex; gap:10px; flex-wrap:wrap;
-      align-items:center; justify-content:space-between;
+      display:flex;gap:10px;flex-wrap:wrap;
+      align-items:center;justify-content:space-between;
     }
     .pill{
       background:rgba(17,24,39,.75);
       border:1px solid rgba(36,50,68,.8);
       border-radius:999px;
       padding:10px 12px;
-      color:var(--text);
-      display:flex; gap:10px; align-items:center;
-      box-shadow: var(--shadow);
+      display:flex;gap:10px;align-items:center;
+      box-shadow:var(--shadow);
     }
-    input[type="text"]{
-      width:min(560px, 72vw);
-      background:transparent;
-      border:none;
-      outline:none;
-      color:var(--text);
-      font-size:14px;
+    input{
+      background:transparent;border:none;outline:none;
+      color:var(--text);font-size:14px;
+      width:min(560px,72vw);
     }
     .btn{
-      border:none;
       background:rgba(125,211,252,.14);
+      border:1px solid rgba(125,211,252,.35);
       color:var(--text);
       padding:10px 12px;
       border-radius:12px;
       cursor:pointer;
-      border:1px solid rgba(125,211,252,.35);
       transition:.15s;
     }
     .btn:hover{transform:translateY(-1px); background:rgba(125,211,252,.20);}
     .btn.danger{
       background:rgba(248,113,113,.12);
-      border:1px solid rgba(248,113,113,.35);
+      border-color:rgba(248,113,113,.35);
     }
     .btn.danger:hover{background:rgba(248,113,113,.18);}
 
-    .tabs{
-      display:flex; gap:8px; flex-wrap:wrap;
-      margin:12px 0 0;
-    }
+    .tabs{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
     .tab{
-      cursor:pointer;
-      user-select:none;
       padding:9px 12px;
       border-radius:999px;
-      background:rgba(17,24,39,.6);
       border:1px solid rgba(36,50,68,.8);
+      background:rgba(17,24,39,.6);
       color:var(--muted);
-      transition:.15s;
+      cursor:pointer;
       font-size:13px;
+      transition:.15s;
+      user-select:none;
     }
     .tab.active{
       color:var(--text);
@@ -99,58 +94,52 @@
       background:rgba(125,211,252,.12);
     }
 
-    main{padding:16px 16px 28px;}
+    /* ✅ main에 padding 주지 않고 container로만 정렬 */
+    main{padding:0 0 28px 0;}
+
     .card{
-      max-width:1200px; margin:0 auto;
-      background:linear-gradient(180deg, rgba(17,24,39,.95), rgba(15,23,42,.92));
+      background:linear-gradient(180deg,rgba(17,24,39,.95),rgba(15,23,42,.92));
       border:1px solid rgba(36,50,68,.85);
       border-radius:var(--radius);
-      box-shadow: var(--shadow);
+      box-shadow:var(--shadow);
       overflow:hidden;
     }
     .cardHead{
       padding:12px 14px;
       border-bottom:1px solid rgba(36,50,68,.55);
-      display:flex; gap:10px; align-items:center; justify-content:space-between;
-      flex-wrap:wrap;
+      display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;
+      align-items:center;
     }
-    .meta{color:var(--muted); font-size:12px;}
-    .badge{
-      display:inline-block;
+    .muted{color:var(--muted)}
+    .mono{font-family:var(--mono)}
+    #countBadge{
+      color:var(--muted);
+      font-size:12px;
       padding:4px 8px;
       border-radius:999px;
       border:1px solid rgba(36,50,68,.75);
       background:rgba(17,24,39,.55);
-      color:var(--muted);
-      font-size:12px;
     }
 
-    /* ✅ “페이지네이션 없이 아래로 쭉” → tableWrap에서 overflow 제거 */
-    .tableWrap{padding:0;} /* 스크롤은 브라우저 전체 스크롤만 사용 */
-    table{
-      width:100%;
-      border-collapse:collapse;
-    }
-    th, td{
+    table{width:100%;border-collapse:collapse}
+    th,td{
       padding:10px 12px;
       border-bottom:1px solid rgba(36,50,68,.45);
-      text-align:left;
       font-size:13px;
-      vertical-align:middle;
       white-space:nowrap;
+      text-align:left;
+      vertical-align:middle;
     }
     th{
-      position:sticky; top:0;
+      position:sticky;top:0;
       background:rgba(11,15,20,.98);
       color:#cbd5e1;
-      font-weight:600;
       z-index:2;
     }
-    tr:hover td{background:rgba(125,211,252,.06);}
-    a{color:var(--accent); text-decoration:none;}
-    a:hover{text-decoration:underline;}
-    .muted{color:var(--muted);}
-    .mono{font-family:var(--mono);}
+    tr:hover td{background:rgba(125,211,252,.06)}
+
+    a{color:var(--accent);text-decoration:none}
+    a:hover{text-decoration:underline}
 
     .copy{
       margin-left:8px;
@@ -165,234 +154,176 @@
     .copy:hover{background:rgba(17,24,39,.85);}
 
     .toast{
-      position:fixed;
-      right:16px; bottom:16px;
+      position:fixed;right:16px;bottom:16px;
       background:rgba(17,24,39,.95);
       border:1px solid rgba(36,50,68,.85);
-      box-shadow: var(--shadow);
-      color:var(--text);
       padding:10px 12px;
       border-radius:12px;
-      font-size:13px;
       opacity:0;
       transform:translateY(10px);
-      transition:.18s;
+      transition:.15s;
       pointer-events:none;
+      box-shadow:var(--shadow);
     }
-    .toast.show{opacity:1; transform:translateY(0);}
+    .toast.show{opacity:1;transform:translateY(0);}
   </style>
 </head>
 
 <body>
-  <header>
-    <div class="wrap">
-      <h1>업무 사이트 링크 관리</h1>
+<header>
+  <div class="container">
+    <h1>업무 사이트 링크 관리</h1>
 
-      <div class="toolbar">
-        <div class="pill" title="현재 탭에서 검색 (이름/IP/URL/계정/비밀번호)">
-          🔎 <input id="search" type="text" placeholder="검색: 이름, IP, URL, 계정, 비밀번호" />
-          <span class="badge" id="countBadge">0 / 0</span>
-        </div>
-        <button class="btn danger" id="clearSearchBtn">검색 초기화</button>
+    <div class="toolbar">
+      <div class="pill">
+        🔎 <input id="search" placeholder="검색 (이름 / IP / 계정 / 비밀번호)">
+        <span id="countBadge">0 / 0</span>
       </div>
-
-      <div class="tabs" id="tabs"></div>
+      <button class="btn danger" id="clearSearchBtn">검색 초기화</button>
     </div>
-  </header>
 
-  <main>
+    <div class="tabs" id="tabs"></div>
+  </div>
+</header>
+
+<main>
+  <div class="container">
     <div class="card">
       <div class="cardHead">
-        <div style="font-size:15px; font-weight:700;" id="tabTitle">A</div>
-        <div class="meta" id="tabMeta">-</div>
+        <div id="tabTitle" style="font-weight:700;">A</div>
+        <div id="tabMeta" class="muted"></div>
       </div>
 
-      <div class="tableWrap">
-        <table>
-          <thead>
-            <tr>
-              <th style="width:60px;">No</th>
-              <th style="width:220px;">이름</th>
-              <th style="width:180px;">IP</th>
-              <th style="width:320px;">바로가기</th>
-              <th style="width:160px;">계정</th>
-              <th style="width:240px;">패스워드</th>
-            </tr>
-          </thead>
-          <tbody id="rows"></tbody>
-        </table>
-      </div>
+      <table>
+        <thead>
+          <tr>
+            <th style="width:60px;">No</th>
+            <th style="width:220px;">이름</th>
+            <th style="width:200px;">IP</th>
+            <th style="width:140px;">URL</th>
+            <th style="width:180px;">계정</th>
+            <th style="width:240px;">패스워드</th>
+          </tr>
+        </thead>
+        <tbody id="rows"></tbody>
+      </table>
     </div>
-  </main>
+  </div>
+</main>
 
-  <div class="toast" id="toast">복사됨</div>
+<div class="toast" id="toast">복사됨</div>
 
-  <script>
-    // =========================================================
-    // ✅ 수동 입력하기 쉬운 데이터 구역 (여기만 편집하면 됨)
-    // - 탭 이름: "A","B","C" → 나중에 모니터링/네트워크 등으로 바꾸면 됨
-    // - 각 탭에 { name, ip, url, user, pass } 를 원하는 만큼 추가
-    // =========================================================
-    const DATA = {
-      "A": [
-        { name: "A-테스트1", ip: "1.1.1.1", url: "https://google.com", user: "user1", pass: "pass1!" },
-        { name: "A-테스트2", ip: "1.1.1.2", url: "https://google.com", user: "user2", pass: "pass2!" },
-        { name: "A-테스트3", ip: "1.1.1.3", url: "https://google.com", user: "user3", pass: "pass3!" },
-      ],
-      "B": [
-        { name: "B-테스트1", ip: "2.2.2.1", url: "https://google.com", user: "user1", pass: "pass1!" },
-        { name: "B-테스트2", ip: "2.2.2.2", url: "https://google.com", user: "user2", pass: "pass2!" },
-      ],
-      "C": [
-        { name: "C-테스트1", ip: "3.3.3.1", url: "https://google.com", user: "user1", pass: "pass1!" },
-        { name: "C-테스트2", ip: "3.3.3.2", url: "https://google.com", user: "user2", pass: "pass2!" },
-      ],
-       "ㄹ": [
-        { name: "C-테스트1", ip: "3.3.3.1", url: "https://google.com", user: "user1", pass: "pass1!" },
-        { name: "C-테스트2", ip: "3.3.3.2", url: "https://google.com", user: "user2", pass: "pass2!" },
-      ],
-       "ㅠㅠ": [
-        { name: "C-테스트1", ip: "3.3.3.1", url: "https://google.com", user: "user1", pass: "pass1!" },
-        { name: "C-테스트2", ip: "3.3.3.2", url: "https://google.com", user: "user2", pass: "pass2!" },
-      ],
-       "ㅇ": [
-        { name: "C-테스트1", ip: "3.3.3.1", url: "https://google.com", user: "user1", pass: "pass1!" },
-        { name: "C-테스트2", ip: "3.3.3.2", url: "https://google.com", user: "user2", pass: "pass2!" },
-      ],
-       "ㅋ": [
-        { name: "C-테스트1", ip: "3.3.3.1", url: "https://google.com", user: "user1", pass: "pass1!" },
-        { name: "C-테스트2", ip: "3.3.3.2", url: "https://google.com", user: "user2", pass: "pass2!" },
-      ],
-       "ㅈ": [
-        { name: "C-테스트1", ip: "3.3.3.1", url: "https://google.com", user: "user1", pass: "pass1!" },
-        { name: "C-테스트2", ip: "3.3.3.2", url: "https://google.com", user: "user2", pass: "pass2!" },
-      ]
-    };
+<script>
+  // ✅ 수동 입력하기 쉬운 데이터 구역 (여기만 편집하면 됨)
+  const DATA = {
+    "A": [
+      { name:"A-테스트1", ip:"1.1.1.1", url:"https://google.com", user:"user1", pass:"pass1!" },
+      { name:"A-테스트2", ip:"1.1.1.2", url:"https://google.com", user:"user2", pass:"pass2!" },
+      { name:"A-테스트3", ip:"1.1.1.3", url:"https://google.com", user:"user3", pass:"pass3!" },
+    ],
+    "B": [
+      { name:"B-테스트1", ip:"2.2.2.1", url:"https://google.com", user:"user1", pass:"pass1!" },
+      { name:"B-테스트2", ip:"2.2.2.2", url:"https://google.com", user:"user2", pass:"pass2!" },
+    ],
+    "C": [
+      { name:"C-테스트1", ip:"3.3.3.1", url:"https://google.com", user:"user1", pass:"pass1!" },
+    ],
+  };
 
-    // =========================================================
-    // UI 동작부
-    // =========================================================
-    const tabsEl = document.getElementById("tabs");
-    const rowsEl = document.getElementById("rows");
-    const tabTitleEl = document.getElementById("tabTitle");
-    const tabMetaEl = document.getElementById("tabMeta");
-    const searchEl = document.getElementById("search");
-    const countBadgeEl = document.getElementById("countBadge");
-    const clearSearchBtn = document.getElementById("clearSearchBtn");
-    const toastEl = document.getElementById("toast");
+  let currentTab = Object.keys(DATA)[0] || "A";
 
-    let currentTab = Object.keys(DATA)[0] || "A";
+  const tabsEl = document.getElementById("tabs");
+  const rowsEl = document.getElementById("rows");
+  const searchEl = document.getElementById("search");
+  const countBadge = document.getElementById("countBadge");
+  const tabTitle = document.getElementById("tabTitle");
+  const tabMeta = document.getElementById("tabMeta");
+  const toast = document.getElementById("toast");
 
-    function renderTabs(){
-      tabsEl.innerHTML = "";
-      Object.keys(DATA).forEach(tabName => {
-        const t = document.createElement("div");
-        t.className = "tab" + (tabName === currentTab ? " active" : "");
-        t.textContent = tabName;
-        t.onclick = () => {
-          currentTab = tabName;
-          searchEl.value = "";
-          renderTabs();
-          renderTable();
-          window.scrollTo({ top: 0, behavior: "smooth" });
-        };
-        tabsEl.appendChild(t);
-      });
-    }
-
-    function renderTable(){
-      const items = DATA[currentTab] || [];
-      const q = (searchEl.value || "").toLowerCase().trim();
-
-      const filtered = q
-        ? items.filter(x =>
-            (x.name||"").toLowerCase().includes(q) ||
-            (x.ip||"").toLowerCase().includes(q) ||
-            (x.url||"").toLowerCase().includes(q) ||
-            (x.user||"").toLowerCase().includes(q) ||
-            (x.pass||"").toLowerCase().includes(q)
-          )
-        : items;
-
-      tabTitleEl.textContent = currentTab;
-      tabMetaEl.textContent = `총 ${items.length}개 · 검색 ${filtered.length}개`;
-      countBadgeEl.textContent = `${filtered.length} / ${items.length}`;
-
-      rowsEl.innerHTML = "";
-      filtered.forEach((x, idx) => {
-        const tr = document.createElement("tr");
-
-        tr.appendChild(td(String(idx+1)));
-        tr.appendChild(td(escapeHtml(x.name)));
-        tr.appendChild(td(`<span class="muted mono">${escapeHtml(x.ip)}</span> ${copyBtn(x.ip)}`));
-        tr.appendChild(td(`
-          <a href="${escapeAttr(x.url)}" target="_blank" rel="noopener">열기</a>
-          <span class="muted"> · </span>
-          <span class="muted mono">${escapeHtml(x.url)}</span>
-          ${copyBtn(x.url)}
-        `));
-        tr.appendChild(td(`<span class="mono">${escapeHtml(x.user)}</span> ${copyBtn(x.user)}`));
-        // ✅ 비밀번호 항상 표시
-        tr.appendChild(td(`<span class="mono">${escapeHtml(x.pass)}</span> ${copyBtn(x.pass)}`));
-
-        rowsEl.appendChild(tr);
-      });
-    }
-
-    function td(html){
-      const el = document.createElement("td");
-      el.innerHTML = html;
-      return el;
-    }
-    function copyBtn(value){
-      const safe = escapeAttr(value || "");
-      return `<button class="copy" data-copy="${safe}" title="복사">Copy</button>`;
-    }
-
-    function showToast(msg){
-      toastEl.textContent = msg;
-      toastEl.classList.add("show");
-      setTimeout(()=>toastEl.classList.remove("show"), 1100);
-    }
-
-    document.addEventListener("click", async (e) => {
-      const btn = e.target.closest("button[data-copy]");
-      if(!btn) return;
-      const value = btn.getAttribute("data-copy") || "";
-      try{
-        await navigator.clipboard.writeText(value);
-        showToast("복사됨");
-      }catch{
-        // 호환 fallback
-        const ta = document.createElement("textarea");
-        ta.value = value;
-        document.body.appendChild(ta);
-        ta.select();
-        document.execCommand("copy");
-        ta.remove();
-        showToast("복사됨(호환)");
-      }
+  function renderTabs(){
+    tabsEl.innerHTML = "";
+    Object.keys(DATA).forEach(t => {
+      const d = document.createElement("div");
+      d.className = "tab" + (t === currentTab ? " active" : "");
+      d.textContent = t;
+      d.onclick = () => {
+        currentTab = t;
+        searchEl.value = "";
+        renderTabs();
+        renderTable();
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      };
+      tabsEl.appendChild(d);
     });
+  }
 
-    searchEl.addEventListener("input", renderTable);
-    clearSearchBtn.addEventListener("click", () => {
-      searchEl.value = "";
-      renderTable();
+  function renderTable(){
+    const items = DATA[currentTab] || [];
+    const q = (searchEl.value || "").toLowerCase().trim();
+
+    const list = q
+      ? items.filter(x => [x.name, x.ip, x.url, x.user, x.pass].join(" ").toLowerCase().includes(q))
+      : items;
+
+    tabTitle.textContent = currentTab;
+    tabMeta.textContent = `총 ${items.length}개 · 검색 ${list.length}개`;
+    countBadge.textContent = `${list.length} / ${items.length}`;
+
+    rowsEl.innerHTML = "";
+    list.forEach((x, i) => {
+      rowsEl.innerHTML += `
+        <tr>
+          <td>${i+1}</td>
+          <td>${escapeHtml(x.name)}</td>
+          <td class="mono">${escapeHtml(x.ip)}<button class="copy" data-copy="${escapeAttr(x.ip)}">Copy</button></td>
+          <td>
+            <a href="${escapeAttr(x.url)}" target="_blank" rel="noopener">열기</a>
+            <button class="copy" data-copy="${escapeAttr(x.url)}">Copy</button>
+          </td>
+          <td class="mono">${escapeHtml(x.user)}<button class="copy" data-copy="${escapeAttr(x.user)}">Copy</button></td>
+          <td class="mono">${escapeHtml(x.pass)}<button class="copy" data-copy="${escapeAttr(x.pass)}">Copy</button></td>
+        </tr>
+      `;
     });
+  }
 
-    function escapeHtml(str){
-      return String(str ?? "")
-        .replaceAll("&","&amp;")
-        .replaceAll("<","&lt;")
-        .replaceAll(">","&gt;")
-        .replaceAll('"',"&quot;")
-        .replaceAll("'","&#39;");
+  document.addEventListener("click", async (e) => {
+    const b = e.target.closest(".copy");
+    if(!b) return;
+    const value = b.dataset.copy || "";
+    try{
+      await navigator.clipboard.writeText(value);
+    }catch{
+      // fallback
+      const ta = document.createElement("textarea");
+      ta.value = value;
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand("copy");
+      ta.remove();
     }
-    function escapeAttr(str){ return escapeHtml(str); }
+    toast.classList.add("show");
+    setTimeout(() => toast.classList.remove("show"), 900);
+  });
 
-    // init
-    renderTabs();
+  searchEl.addEventListener("input", renderTable);
+  document.getElementById("clearSearchBtn").addEventListener("click", () => {
+    searchEl.value = "";
     renderTable();
-  </script>
+  });
+
+  function escapeHtml(str){
+    return String(str ?? "")
+      .replaceAll("&","&amp;")
+      .replaceAll("<","&lt;")
+      .replaceAll(">","&gt;")
+      .replaceAll('"',"&quot;")
+      .replaceAll("'","&#39;");
+  }
+  function escapeAttr(str){ return escapeHtml(str); }
+
+  renderTabs();
+  renderTable();
+</script>
 </body>
 </html>
