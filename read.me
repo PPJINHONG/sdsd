@@ -1,47 +1,27 @@
 #!/bin/bash
 set -euo pipefail
 
-LIMIT=200
-OUT="cinder_volume_ids.txt"
+OUT="result.txt"
+LIMIT=4000
+RUNS=6
+MARKER=""
 
-# OUT이 있으면 마지막 ID부터 재개, 없으면 새로 시작
-if [ -f "$OUT" ] && [ -s "$OUT" ]; then
-  MARKER=$(tail -n 1 "$OUT")
-  echo "[RESUME] last_saved_id=$MARKER"
-else
-  : > "$OUT"
-  MARKER=""
-  echo "[START] new output: $OUT"
-fi
+: > "$OUT"
 
-while true; do
+for i in $(seq 1 "$RUNS"); do
   if [ -z "$MARKER" ]; then
-    PAGE=$(cinder list --all-tenants 1 --sort id:asc --limit "$LIMIT")
+    cinder list --all --fields ID,"volume Type",Size --sort id:asc --limit "$LIMIT" \
+      | tail -n +4 | sed '$d' | tee -a "$OUT" >/dev/null
   else
-    PAGE=$(cinder list --all-tenants 1 --sort id:asc --limit "$LIMIT" --marker "$MARKER")
+    cinder list --all --fields ID,"volume Type",Size --sort id:asc --limit "$LIMIT" --marker "$MARKER" \
+      | tail -n +4 | sed '$d' | tee -a "$OUT" >/dev/null
   fi
 
-  # cinder table output에서 UUID만 추출
-  IDS=$(echo "$PAGE" | awk -F'|' '
-    /^[+]/ {next}
-    NF>3 {
-      gsub(/^[ \t]+|[ \t]+$/, "", $2);
-      if ($2 ~ /^[0-9a-fA-F-]{36}$/) print $2
-    }')
+  # 방금 append된 마지막 데이터 줄에서 ID(2번째 컬럼)만 추출해서 marker로
+  MARKER=$(tail -n 1 "$OUT" | awk -F'|' '{gsub(/^[ \t]+|[ \t]+$/, "", $2); print $2}')
 
-  if [ -z "$IDS" ]; then
-    echo "[DONE] total=$(wc -l < "$OUT")"
-    break
-  fi
+  # 더 이상 데이터 없으면 종료
+  [ -z "$MARKER" ] && break
 
-  # 누적 저장
-  echo "$IDS" >> "$OUT"
-
-  # 다음 marker 갱신
-  MARKER=$(echo "$IDS" | tail -n 1)
-
-  # 진행상황 출력
-  TOTAL=$(wc -l < "$OUT")
-  PAGE_CNT=$(echo "$IDS" | wc -l | tr -d ' ')
-  echo "[PAGE] got=$PAGE_CNT total=$TOTAL marker=$MARKER"
+  echo "RUN=$i next_marker=$MARKER" >&2
 done
