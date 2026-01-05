@@ -1,329 +1,47 @@
-<!doctype html>
-<html lang="ko">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>업무 사이트 링크 관리</title>
+#!/bin/bash
+set -euo pipefail
 
-  <style>
-    :root{
-      --bg:#0b0f14;
-      --panel:#111827;
-      --panel2:#0f172a;
-      --text:#e5e7eb;
-      --muted:#9ca3af;
-      --line:#243244;
-      --accent:#7dd3fc;
-      --shadow:0 10px 30px rgba(0,0,0,.35);
-      --radius:14px;
-      --font:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,"Apple SD Gothic Neo","Noto Sans KR",sans-serif;
-      --mono:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono",monospace;
-    }
-    *{box-sizing:border-box}
-    body{
-      margin:0;
-      font-family:var(--font);
-      background:var(--bg);
-      color:var(--text);
-    }
+LIMIT=200
+OUT="cinder_volume_ids.txt"
 
-    /* ✅ 상단/하단 왼쪽 기준선 통일 컨테이너 */
-    .container{
-      max-width:1200px;
-      margin:0 auto;
-      padding:14px 16px; /* 이 패딩이 기준선 */
-    }
+# OUT이 있으면 마지막 ID부터 재개, 없으면 새로 시작
+if [ -f "$OUT" ] && [ -s "$OUT" ]; then
+  MARKER=$(tail -n 1 "$OUT")
+  echo "[RESUME] last_saved_id=$MARKER"
+else
+  : > "$OUT"
+  MARKER=""
+  echo "[START] new output: $OUT"
+fi
 
-    header{
-      position:sticky; top:0; z-index:10;
-      background:rgba(11,15,20,.92);
-      border-bottom:1px solid rgba(36,50,68,.65);
-      backdrop-filter:blur(8px);
-    }
-    h1{margin:0;font-size:18px;letter-spacing:-.2px}
+while true; do
+  if [ -z "$MARKER" ]; then
+    PAGE=$(cinder list --all-tenants 1 --sort id:asc --limit "$LIMIT")
+  else
+    PAGE=$(cinder list --all-tenants 1 --sort id:asc --limit "$LIMIT" --marker "$MARKER")
+  fi
 
-    .toolbar{
-      margin-top:10px;
-      display:flex;gap:10px;flex-wrap:wrap;
-      align-items:center;justify-content:space-between;
-    }
-    .pill{
-      background:rgba(17,24,39,.75);
-      border:1px solid rgba(36,50,68,.8);
-      border-radius:999px;
-      padding:10px 12px;
-      display:flex;gap:10px;align-items:center;
-      box-shadow:var(--shadow);
-    }
-    input{
-      background:transparent;border:none;outline:none;
-      color:var(--text);font-size:14px;
-      width:min(560px,72vw);
-    }
-    .btn{
-      background:rgba(125,211,252,.14);
-      border:1px solid rgba(125,211,252,.35);
-      color:var(--text);
-      padding:10px 12px;
-      border-radius:12px;
-      cursor:pointer;
-      transition:.15s;
-    }
-    .btn:hover{transform:translateY(-1px); background:rgba(125,211,252,.20);}
-    .btn.danger{
-      background:rgba(248,113,113,.12);
-      border-color:rgba(248,113,113,.35);
-    }
-    .btn.danger:hover{background:rgba(248,113,113,.18);}
+  # cinder table output에서 UUID만 추출
+  IDS=$(echo "$PAGE" | awk -F'|' '
+    /^[+]/ {next}
+    NF>3 {
+      gsub(/^[ \t]+|[ \t]+$/, "", $2);
+      if ($2 ~ /^[0-9a-fA-F-]{36}$/) print $2
+    }')
 
-    .tabs{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
-    .tab{
-      padding:9px 12px;
-      border-radius:999px;
-      border:1px solid rgba(36,50,68,.8);
-      background:rgba(17,24,39,.6);
-      color:var(--muted);
-      cursor:pointer;
-      font-size:13px;
-      transition:.15s;
-      user-select:none;
-    }
-    .tab.active{
-      color:var(--text);
-      border-color:rgba(125,211,252,.55);
-      background:rgba(125,211,252,.12);
-    }
+  if [ -z "$IDS" ]; then
+    echo "[DONE] total=$(wc -l < "$OUT")"
+    break
+  fi
 
-    /* ✅ main에 padding 주지 않고 container로만 정렬 */
-    main{padding:0 0 28px 0;}
+  # 누적 저장
+  echo "$IDS" >> "$OUT"
 
-    .card{
-      background:linear-gradient(180deg,rgba(17,24,39,.95),rgba(15,23,42,.92));
-      border:1px solid rgba(36,50,68,.85);
-      border-radius:var(--radius);
-      box-shadow:var(--shadow);
-      overflow:hidden;
-    }
-    .cardHead{
-      padding:12px 14px;
-      border-bottom:1px solid rgba(36,50,68,.55);
-      display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;
-      align-items:center;
-    }
-    .muted{color:var(--muted)}
-    .mono{font-family:var(--mono)}
-    #countBadge{
-      color:var(--muted);
-      font-size:12px;
-      padding:4px 8px;
-      border-radius:999px;
-      border:1px solid rgba(36,50,68,.75);
-      background:rgba(17,24,39,.55);
-    }
+  # 다음 marker 갱신
+  MARKER=$(echo "$IDS" | tail -n 1)
 
-    table{width:100%;border-collapse:collapse}
-    th,td{
-      padding:10px 12px;
-      border-bottom:1px solid rgba(36,50,68,.45);
-      font-size:13px;
-      white-space:nowrap;
-      text-align:left;
-      vertical-align:middle;
-    }
-    th{
-      position:sticky;top:0;
-      background:rgba(11,15,20,.98);
-      color:#cbd5e1;
-      z-index:2;
-    }
-    tr:hover td{background:rgba(125,211,252,.06)}
-
-    a{color:var(--accent);text-decoration:none}
-    a:hover{text-decoration:underline}
-
-    .copy{
-      margin-left:8px;
-      font-size:12px;
-      padding:6px 8px;
-      border-radius:10px;
-      border:1px solid rgba(36,50,68,.75);
-      background:rgba(17,24,39,.55);
-      color:var(--text);
-      cursor:pointer;
-    }
-    .copy:hover{background:rgba(17,24,39,.85);}
-
-    .toast{
-      position:fixed;right:16px;bottom:16px;
-      background:rgba(17,24,39,.95);
-      border:1px solid rgba(36,50,68,.85);
-      padding:10px 12px;
-      border-radius:12px;
-      opacity:0;
-      transform:translateY(10px);
-      transition:.15s;
-      pointer-events:none;
-      box-shadow:var(--shadow);
-    }
-    .toast.show{opacity:1;transform:translateY(0);}
-  </style>
-</head>
-
-<body>
-<header>
-  <div class="container">
-    <h1>업무 사이트 링크 관리</h1>
-
-    <div class="toolbar">
-      <div class="pill">
-        🔎 <input id="search" placeholder="검색 (이름 / IP / 계정 / 비밀번호)">
-        <span id="countBadge">0 / 0</span>
-      </div>
-      <button class="btn danger" id="clearSearchBtn">검색 초기화</button>
-    </div>
-
-    <div class="tabs" id="tabs"></div>
-  </div>
-</header>
-
-<main>
-  <div class="container">
-    <div class="card">
-      <div class="cardHead">
-        <div id="tabTitle" style="font-weight:700;">A</div>
-        <div id="tabMeta" class="muted"></div>
-      </div>
-
-      <table>
-        <thead>
-          <tr>
-            <th style="width:60px;">No</th>
-            <th style="width:220px;">이름</th>
-            <th style="width:200px;">IP</th>
-            <th style="width:140px;">URL</th>
-            <th style="width:180px;">계정</th>
-            <th style="width:240px;">패스워드</th>
-          </tr>
-        </thead>
-        <tbody id="rows"></tbody>
-      </table>
-    </div>
-  </div>
-</main>
-
-<div class="toast" id="toast">복사됨</div>
-
-<script>
-  // ✅ 수동 입력하기 쉬운 데이터 구역 (여기만 편집하면 됨)
-  const DATA = {
-    "A": [
-      { name:"A-테스트1", ip:"1.1.1.1", url:"https://google.com", user:"user1", pass:"pass1!" },
-      { name:"A-테스트2", ip:"1.1.1.2", url:"https://google.com", user:"user2", pass:"pass2!" },
-      { name:"A-테스트3", ip:"1.1.1.3", url:"https://google.com", user:"user3", pass:"pass3!" },
-    ],
-    "B": [
-      { name:"B-테스트1", ip:"2.2.2.1", url:"https://google.com", user:"user1", pass:"pass1!" },
-      { name:"B-테스트2", ip:"2.2.2.2", url:"https://google.com", user:"user2", pass:"pass2!" },
-    ],
-    "C": [
-      { name:"C-테스트1", ip:"3.3.3.1", url:"https://google.com", user:"user1", pass:"pass1!" },
-    ],
-  };
-
-  let currentTab = Object.keys(DATA)[0] || "A";
-
-  const tabsEl = document.getElementById("tabs");
-  const rowsEl = document.getElementById("rows");
-  const searchEl = document.getElementById("search");
-  const countBadge = document.getElementById("countBadge");
-  const tabTitle = document.getElementById("tabTitle");
-  const tabMeta = document.getElementById("tabMeta");
-  const toast = document.getElementById("toast");
-
-  function renderTabs(){
-    tabsEl.innerHTML = "";
-    Object.keys(DATA).forEach(t => {
-      const d = document.createElement("div");
-      d.className = "tab" + (t === currentTab ? " active" : "");
-      d.textContent = t;
-      d.onclick = () => {
-        currentTab = t;
-        searchEl.value = "";
-        renderTabs();
-        renderTable();
-        window.scrollTo({ top: 0, behavior: "smooth" });
-      };
-      tabsEl.appendChild(d);
-    });
-  }
-
-  function renderTable(){
-    const items = DATA[currentTab] || [];
-    const q = (searchEl.value || "").toLowerCase().trim();
-
-    const list = q
-      ? items.filter(x => [x.name, x.ip, x.url, x.user, x.pass].join(" ").toLowerCase().includes(q))
-      : items;
-
-    tabTitle.textContent = currentTab;
-    tabMeta.textContent = `총 ${items.length}개 · 검색 ${list.length}개`;
-    countBadge.textContent = `${list.length} / ${items.length}`;
-
-    rowsEl.innerHTML = "";
-    list.forEach((x, i) => {
-      rowsEl.innerHTML += `
-        <tr>
-          <td>${i+1}</td>
-          <td>${escapeHtml(x.name)}</td>
-          <td class="mono">${escapeHtml(x.ip)}<button class="copy" data-copy="${escapeAttr(x.ip)}">Copy</button></td>
-          <td>
-            <a href="${escapeAttr(x.url)}" target="_blank" rel="noopener">열기</a>
-            <button class="copy" data-copy="${escapeAttr(x.url)}">Copy</button>
-          </td>
-          <td class="mono">${escapeHtml(x.user)}<button class="copy" data-copy="${escapeAttr(x.user)}">Copy</button></td>
-          <td class="mono">${escapeHtml(x.pass)}<button class="copy" data-copy="${escapeAttr(x.pass)}">Copy</button></td>
-        </tr>
-      `;
-    });
-  }
-
-  document.addEventListener("click", async (e) => {
-    const b = e.target.closest(".copy");
-    if(!b) return;
-    const value = b.dataset.copy || "";
-    try{
-      await navigator.clipboard.writeText(value);
-    }catch{
-      // fallback
-      const ta = document.createElement("textarea");
-      ta.value = value;
-      document.body.appendChild(ta);
-      ta.select();
-      document.execCommand("copy");
-      ta.remove();
-    }
-    toast.classList.add("show");
-    setTimeout(() => toast.classList.remove("show"), 900);
-  });
-
-  searchEl.addEventListener("input", renderTable);
-  document.getElementById("clearSearchBtn").addEventListener("click", () => {
-    searchEl.value = "";
-    renderTable();
-  });
-
-  function escapeHtml(str){
-    return String(str ?? "")
-      .replaceAll("&","&amp;")
-      .replaceAll("<","&lt;")
-      .replaceAll(">","&gt;")
-      .replaceAll('"',"&quot;")
-      .replaceAll("'","&#39;");
-  }
-  function escapeAttr(str){ return escapeHtml(str); }
-
-  renderTabs();
-  renderTable();
-</script>
-</body>
-</html>
+  # 진행상황 출력
+  TOTAL=$(wc -l < "$OUT")
+  PAGE_CNT=$(echo "$IDS" | wc -l | tr -d ' ')
+  echo "[PAGE] got=$PAGE_CNT total=$TOTAL marker=$MARKER"
+done
