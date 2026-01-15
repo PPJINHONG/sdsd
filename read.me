@@ -5,92 +5,43 @@ ZBX_SERVER="10.0.0.10"
 ZBX_PORT="10051"
 ZBX_HOST="collector-host"
 
-RESULT_FILE="/opt/collector/result"
+RESULT_FILE="/root/jinhong/result"     # 스샷 기준 경로
 SENDER_FILE="/tmp/zbx_push.txt"
 
-echo "[DBG] RESULT_FILE=$RESULT_FILE"
-echo "[DBG] SENDER_FILE=$SENDER_FILE"
-
-# 1) result 파일 존재/사이즈 확인
 if [[ ! -f "$RESULT_FILE" ]]; then
   echo "[ERROR] result file not found: $RESULT_FILE" >&2
   exit 1
 fi
 
-echo "[DBG] ls -l RESULT_FILE:"
-ls -l "$RESULT_FILE"
-
-echo "[DBG] First 10 lines of RESULT_FILE (showing hidden chars):"
-# cat -A : 줄끝($), 탭(^I), CR(^M) 같은거 보임
-head -n 10 "$RESULT_FILE" | cat -A
-
-echo "[DBG] Total lines in RESULT_FILE:"
-wc -l "$RESULT_FILE"
-
-echo "[DBG] Field count (NF) for first 10 non-empty lines:"
-# 각 줄의 필드 개수(NF) 출력해서 왜 NF<7로 떨어지는지 확인
-awk -F',' '
-  $0 !~ /^[ \t]*$/ && $0 !~ /^[ \t]*#/ {
-    line=$0; gsub(/\r/, "", line);
-    n=split(line, a, ",");
-    print "NF=" n " | " line;
-    c++;
-    if (c>=10) exit
-  }
-' "$RESULT_FILE"
-
-# 2) 변환 (디버그 로그 같이 찍음)
-echo "[DBG] Building sender file..."
+# result 한 줄: name,v1,v2,v3,v4,v5  (NF=6)
 awk -F',' -v host="$ZBX_HOST" '
 function trim(s){ gsub(/^[ \t]+|[ \t]+$/, "", s); return s }
-
 {
-  raw=$0
-  gsub(/\r/, "", raw)
+  gsub(/\r/, "", $0)
+  if ($0 ~ /^[ \t]*$/) next
+  if ($0 ~ /^[ \t]*#/) next
+  if (NF < 6) next
 
-  # 빈 줄/주석 스킵
-  if (raw ~ /^[ \t]*$/) next
-  if (raw ~ /^[ \t]*#/) next
+  name = trim($1)
+  v1   = trim($2)
+  v2   = trim($3)
+  v3   = trim($4)
+  v4   = trim($5)
+  v5   = trim($6)
 
-  # 필드 수 체크(디버그)
-  if (split(raw, f, ",") < 7) {
-    print "[SKIP] NF<7 -> " raw > "/dev/stderr"
-    next
-  }
-
-  name = trim(f[1])
-  v1   = trim(f[2])
-  v2   = trim(f[3])
-  v3   = trim(f[4])
-  # f[5] = 버림
-  v5   = trim(f[6])
-  v6   = trim(f[7])
-
-  if (name == "") {
-    print "[SKIP] empty name -> " raw > "/dev/stderr"
-    next
-  }
+  if (name == "") next
 
   print host, "blk.total[" name "]", v1
   print host, "blk.allowcation[" name "]", v2
   print host, "blk.allowcation_per[" name "]", v3
-  print host, "blk.used[" name "]", v5
-  print host, "blk.used_per[" name "]", v6
+  print host, "blk.used[" name "]", v4
+  print host, "blk.used_per[" name "]", v5
 }
 ' "$RESULT_FILE" > "$SENDER_FILE"
 
-echo "[DBG] Sender file created. lines:"
-wc -l "$SENDER_FILE"
+# 디버그로 생성된 sender 파일 확인
+echo "=== sender file lines: $(wc -l < "$SENDER_FILE") ==="
+head -n 20 "$SENDER_FILE"
 
-echo "[DBG] First 30 lines of SENDER_FILE:"
-head -n 30 "$SENDER_FILE" | cat -A
-
-# 3) sender 파일이 비었으면 종료
-if [[ ! -s "$SENDER_FILE" ]]; then
-  echo "[ERROR] SENDER_FILE is empty. Check [SKIP] reasons above." >&2
-  exit 2
-fi
-
-# 4) 전송(디버그 출력 강화)
-echo "[DBG] Sending to Zabbix..."
+# 전송
 zabbix_sender -vv -z "$ZBX_SERVER" -p "$ZBX_PORT" -i "$SENDER_FILE"
