@@ -1,27 +1,46 @@
 #!/bin/bash
 set -euo pipefail
 
-OUT="result.txt"
-LIMIT=4000
-RUNS=6
-MARKER=""
+ZBX_SERVER="10.0.0.10"
+ZBX_PORT="10051"
+ZBX_HOST="collector-host"
 
-: > "$OUT"
+RESULT_FILE="/opt/collector/result"   # 네 result 파일 경로로 수정
+SENDER_FILE="/tmp/zbx_push.txt"
 
-for i in $(seq 1 "$RUNS"); do
-  if [ -z "$MARKER" ]; then
-    cinder list --all --fields ID,"volume Type",Size --sort id:asc --limit "$LIMIT" \
-      | tail -n +4 | sed '$d' | tee -a "$OUT" >/dev/null
-  else
-    cinder list --all --fields ID,"volume Type",Size --sort id:asc --limit "$LIMIT" --marker "$MARKER" \
-      | tail -n +4 | sed '$d' | tee -a "$OUT" >/dev/null
-  fi
+# result 파일 체크
+if [[ ! -f "$RESULT_FILE" ]]; then
+  echo "[ERROR] result file not found: $RESULT_FILE" >&2
+  exit 1
+fi
 
-  # 방금 append된 마지막 데이터 줄에서 ID(2번째 컬럼)만 추출해서 marker로
-  MARKER=$(tail -n 1 "$OUT" | awk -F'|' '{gsub(/^[ \t]+|[ \t]+$/, "", $2); print $2}')
+# result -> sender input 변환
+# result 한 줄: name,v1,v2,v3,v4,v5,v6
+# 전송: v1,v2,v3,v5,v6 (v4는 버림)
+awk -F',' -v host="$ZBX_HOST" '
+function trim(s){ gsub(/^[ \t]+|[ \t]+$/, "", s); return s }
+{
+  gsub(/\r/, "", $0)
+  if ($0 ~ /^[ \t]*$/) next
+  if ($0 ~ /^[ \t]*#/) next
+  if (NF < 7) next
 
-  # 더 이상 데이터 없으면 종료
-  [ -z "$MARKER" ] && break
+  name = trim($1)
+  v1   = trim($2)
+  v2   = trim($3)
+  v3   = trim($4)
+  v5   = trim($6)
+  v6   = trim($7)
 
-  echo "RUN=$i next_marker=$MARKER" >&2
-done
+  if (name == "") next
+
+  print host, "blk.total[" name "]", v1
+  print host, "blk.allowcation[" name "]", v2
+  print host, "blk.allowcation_per[" name "]", v3
+  print host, "blk.used[" name "]", v5
+  print host, "blk.used_per[" name "]", v6
+}
+' "$RESULT_FILE" > "$SENDER_FILE"
+
+# 전송
+zabbix_sender -z "$ZBX_SERVER" -p "$ZBX_PORT" -i "$SENDER_FILE"
