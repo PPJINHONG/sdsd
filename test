@@ -10,25 +10,25 @@
     <tbody>
       <!-- 예시 1 -->
       <tr style="background:#e6e6e6;">
-        <td style="border:1px solid #333; padding:8px;">aggr_aff_node_03r02_01_data</td>
-        <td style="border:1px solid #333; padding:8px;">kr_az2_aff_03r02_prd_ssd</td>
+        <td style="border:1px solid #333; padding:8px;">aggr_af123f_nodeasdf_03r02_01_data</td>
+        <td style="border:1px solid #333; padding:8px;">kr_az2_a123ff_03123r02_prd_ssd</td>
         <td style="border:1px solid #333; padding:8px; white-space:pre-line;">
-192.168.80.88:/kraz2_prd_ssd1
-192.168.80.88:/kraz2_prd_ssd3
-192.168.80.89:/kraz2_prd_ssd2
-192.168.80.89:/kraz2_prd_ssd4
+192.168213.80.88:/kra213z2_prd_ssd1
+192.161238.80.88:/kra231z2_prd_ssd3
+192.162138.80.89:/kraz3122_prd_ss213d2
+192.121368.80.89:/kra213z2_pr123d_ssd4
         </td>
       </tr>
 
       <!-- 예시 2 -->
       <tr style="background:#e6e6e6;">
-        <td style="border:1px solid #333; padding:8px;">aggr_aff_node_03r03_01_data</td>
-        <td style="border:1px solid #333; padding:8px;">kr_az2_aff_03r03_prd_ssd</td>
+        <td style="border:1px solid #333; padding:8px;">aggr123_aff_no123de_01233r03_01_data</td>
+        <td style="border:1px solid #333; padding:8px;">kr_az2_123aff_03r03_213prd_ssd</td>
         <td style="border:1px solid #333; padding:8px; white-space:pre-line;">
-192.168.80.108:/kraz2_prd_ssd5
-192.168.80.108:/kraz2_prd_ssd7
-192.168.80.109:/kraz2_prd_ssd6
-192.168.80.109:/kraz2_prd_ssd8
+192.168.82130.108:/kraz2_pr213d_ssd5
+192.168.82130123.108:/kra123z2_prd_ssd7
+192.162318.80.109:/kraz2_123prd_ssd6
+192.162138.80.109:/kraz2_123prd_ssd8
         </td>
       </tr>
 
