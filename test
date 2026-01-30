@@ -1,0 +1,38 @@
+<div style="overflow:auto; max-height:700px;">
+  <table style="border-collapse:collapse; width:100%; font-size:13px;">
+    <thead>
+      <tr style="background:#f2c94c; color:#000;">
+        <th style="border:1px solid #333; padding:8px; text-align:left;">Aggr_Name</th>
+        <th style="border:1px solid #333; padding:8px; text-align:left;">Backend_Name</th>
+        <th style="border:1px solid #333; padding:8px; text-align:left;">Backend_Volume</th>
+      </tr>
+    </thead>
+    <tbody>
+      <!-- 예시 1 -->
+      <tr style="background:#e6e6e6;">
+        <td style="border:1px solid #333; padding:8px;">aggr_aff_node_03r02_01_data</td>
+        <td style="border:1px solid #333; padding:8px;">kr_az2_aff_03r02_prd_ssd</td>
+        <td style="border:1px solid #333; padding:8px; white-space:pre-line;">
+192.168.80.88:/kraz2_prd_ssd1
+192.168.80.88:/kraz2_prd_ssd3
+192.168.80.89:/kraz2_prd_ssd2
+192.168.80.89:/kraz2_prd_ssd4
+        </td>
+      </tr>
+
+      <!-- 예시 2 -->
+      <tr style="background:#e6e6e6;">
+        <td style="border:1px solid #333; padding:8px;">aggr_aff_node_03r03_01_data</td>
+        <td style="border:1px solid #333; padding:8px;">kr_az2_aff_03r03_prd_ssd</td>
+        <td style="border:1px solid #333; padding:8px; white-space:pre-line;">
+192.168.80.108:/kraz2_prd_ssd5
+192.168.80.108:/kraz2_prd_ssd7
+192.168.80.109:/kraz2_prd_ssd6
+192.168.80.109:/kraz2_prd_ssd8
+        </td>
+      </tr>
+
+      <!-- 필요한 만큼 계속 추가 -->
+    </tbody>
+  </table>
+</div>
