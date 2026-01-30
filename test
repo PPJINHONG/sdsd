@@ -1,38 +1,188 @@
-<div style="overflow:auto; max-height:700px;">
+<div style="overflow:auto; max-height:800px;">
   <table style="border-collapse:collapse; width:100%; font-size:13px;">
     <thead>
-      <tr style="background:#f2c94c; color:#000;">
-        <th style="border:1px solid #333; padding:8px; text-align:left;">Aggr_Name</th>
-        <th style="border:1px solid #333; padding:8px; text-align:left;">Backend_Name</th>
-        <th style="border:1px solid #333; padding:8px; text-align:left;">Backend_Volume</th>
+      <tr>
+        <th style="border:1px solid #000; padding:8px; text-align:center;">Tenant</th>
+        <th style="border:1px solid #000; padding:8px; text-align:center;">Name</th>
+        <th style="border:1px solid #000; padding:8px; text-align:center;">Aggr_Name</th>
+        <th style="border:1px solid #000; padding:8px; text-align:center;">Backend_Name</th>
+        <th style="border:1px solid #000; padding:8px; text-align:center;">Backend_Volume</th>
       </tr>
     </thead>
+
     <tbody>
-      <!-- 예시 1 -->
-      <tr style="background:#e6e6e6;">
-        <td style="border:1px solid #333; padding:8px;">aggr_af123f_nodeasdf_03r02_01_data</td>
-        <td style="border:1px solid #333; padding:8px;">kr_az2_a123ff_03123r02_prd_ssd</td>
-        <td style="border:1px solid #333; padding:8px; white-space:pre-line;">
-192.168213.80.88:/kra213z2_prd_ssd1
-192.161238.80.88:/kra231z2_prd_ssd3
-192.162138.80.89:/kraz3122_prd_ss213d2
-192.121368.80.89:/kra213z2_pr123d_ssd4
+      <!-- PRD | kr-az2-aff-03r02 (2 rows) -->
+      <tr>
+        <td style="border:1px solid #000; padding:8px; text-align:center;" rowspan="2">PRD</td>
+        <td style="border:1px solid #000; padding:8px; text-align:center;" rowspan="2">kr-az2-aff-03r02</td>
+        <td style="border:1px solid #000; padding:8px;">aggr_aff_node_03r02_01_data</td>
+        <td style="border:1px solid #000; padding:8px; text-align:center;" rowspan="2">kr_az2_aff_03r02_prd_ssd</td>
+        <td style="border:1px solid #000; padding:8px;">
+          192.168.80.88:/kraz2_prd_ssd1<br>
+          192.168.80.88:/kraz2_prd_ssd3
+        </td>
+      </tr>
+      <tr>
+        <td style="border:1px solid #000; padding:8px;">aggr_aff_node_03r02_02_data</td>
+        <td style="border:1px solid #000; padding:8px;">
+          192.168.80.89:/kraz2_prd_ssd2<br>
+          192.168.80.89:/kraz2_prd_ssd4
         </td>
       </tr>
 
-      <!-- 예시 2 -->
-      <tr style="background:#e6e6e6;">
-        <td style="border:1px solid #333; padding:8px;">aggr123_aff_no123de_01233r03_01_data</td>
-        <td style="border:1px solid #333; padding:8px;">kr_az2_123aff_03r03_213prd_ssd</td>
-        <td style="border:1px solid #333; padding:8px; white-space:pre-line;">
-192.168.82130.108:/kraz2_pr213d_ssd5
-192.168.82130123.108:/kra123z2_prd_ssd7
-192.162318.80.109:/kraz2_123prd_ssd6
-192.162138.80.109:/kraz2_123prd_ssd8
+      <!-- PRD | kr-az2-aff-03r03 (2 rows) -->
+      <tr>
+        <td style="border:1px solid #000; padding:8px; text-align:center;" rowspan="2">PRD</td>
+        <td style="border:1px solid #000; padding:8px; text-align:center;" rowspan="2">kr-az2-aff-03r03</td>
+        <td style="border:1px solid #000; padding:8px;">aggr_aff_node_03r03_01_data</td>
+        <td style="border:1px solid #000; padding:8px; text-align:center;" rowspan="2">kr_az2_aff_03r03_prd_ssd</td>
+        <td style="border:1px solid #000; padding:8px;">
+          192.168.80.108:/kraz2_prd_ssd5<br>
+          192.168.80.108:/kraz2_prd_ssd7
+        </td>
+      </tr>
+      <tr>
+        <td style="border:1px solid #000; padding:8px;">aggr_aff_node_03r03_02_data</td>
+        <td style="border:1px solid #000; padding:8px;">
+          192.168.80.109:/kraz2_prd_ssd6<br>
+          192.168.80.109:/kraz2_prd_ssd8
         </td>
       </tr>
 
-      <!-- 필요한 만큼 계속 추가 -->
+      <!-- PRD | kr-az2-aff-04r05 (2 rows) -->
+      <tr>
+        <td style="border:1px solid #000; padding:8px; text-align:center;" rowspan="2">PRD</td>
+        <td style="border:1px solid #000; padding:8px; text-align:center;" rowspan="2">kr-az2-aff-04r05</td>
+        <td style="border:1px solid #000; padding:8px;">aggr_aff_node_04r05_01_data</td>
+        <td style="border:1px solid #000; padding:8px; text-align:center;" rowspan="2">kr_az2_aff_04r05_prd_ssd</td>
+        <td style="border:1px solid #000; padding:8px;">
+          192.168.83.37:/kraz2_prd_ssd9<br>
+          192.168.83.37:/kraz2_prd_ssd11
+        </td>
+      </tr>
+      <tr>
+        <td style="border:1px solid #000; padding:8px;">aggr_aff_node_04r05_02_data</td>
+        <td style="border:1px solid #000; padding:8px;">
+          192.168.83.38:/kraz2_prd_ssd10<br>
+          192.168.83.38:/kraz2_prd_ssd12
+        </td>
+      </tr>
+
+      <!-- PRD | kr-az2-aff-05r05 (4 rows) -->
+      <tr>
+        <td style="border:1px solid #000; padding:8px; text-align:center;" rowspan="4">PRD</td>
+        <td style="border:1px solid #000; padding:8px; text-align:center;" rowspan="4">kr-az2-aff-05r05</td>
+
+        <td style="border:1px solid #000; padding:8px;">aggr_aff_node_05r05_01_data</td>
+        <td style="border:1px solid #000; padding:8px; text-align:center;" rowspan="2">kr_az2_aff_01_prd_ssd</td>
+        <td style="border:1px solid #000; padding:8px;">
+          192.168.87.171:/kraz2_prd_ssd17<br>
+          192.168.87.173:/kraz2_prd_ssd19<br>
+          192.168.87.175:/kraz2_prd_ssd21<br>
+          192.168.87.177:/kraz2_prd_ssd23
+        </td>
+      </tr>
+      <tr>
+        <td style="border:1px solid #000; padding:8px;">aggr_aff_node_05r05_02_data</td>
+        <td style="border:1px solid #000; padding:8px;">
+          192.168.87.172:/kraz2_prd_ssd18<br>
+          192.168.87.174:/kraz2_prd_ssd20<br>
+          192.168.87.176:/kraz2_prd_ssd22<br>
+          192.168.87.178:/kraz2_prd_ssd24
+        </td>
+      </tr>
+      <tr>
+        <td style="border:1px solid #000; padding:8px;">aggr_aff_node_06r04_01_data</td>
+        <td style="border:1px solid #000; padding:8px; text-align:center;" rowspan="2">kr_az2_aff_05r05_prd_ssd</td>
+        <td style="border:1px solid #000; padding:8px;">
+          192.168.83.42:/kraz2_prd_ssd15<br>
+          192.168.83.42:/kraz2_prd_ssd13
+        </td>
+      </tr>
+      <tr>
+        <td style="border:1px solid #000; padding:8px;">aggr_aff_node_06r04_02_data</td>
+        <td style="border:1px solid #000; padding:8px;">
+          192.168.83.43:/kraz2_prd_ssd14<br>
+          192.168.83.43:/kraz2_prd_ssd16
+        </td>
+      </tr>
+
+      <!-- PRD | kr-az2-fas-03r02 (2 rows) -->
+      <tr>
+        <td style="border:1px solid #000; padding:8px; text-align:center;" rowspan="2">PRD</td>
+        <td style="border:1px solid #000; padding:8px; text-align:center;" rowspan="2">kr-az2-fas-03r02</td>
+        <td style="border:1px solid #000; padding:8px;">aggr_fas_node_03r02_01_data</td>
+        <td style="border:1px solid #000; padding:8px; text-align:center;" rowspan="2">kr_az2_fas_03r02_prd_sas</td>
+        <td style="border:1px solid #000; padding:8px;">
+          192.168.80.82:/kraz2_prd_sas1<br>
+          192.168.80.82:/kraz2_prd_sas3
+        </td>
+      </tr>
+      <tr>
+        <td style="border:1px solid #000; padding:8px;">aggr_fas_node_03r02_02_data</td>
+        <td style="border:1px solid #000; padding:8px;">
+          192.168.80.83:/kraz2_prd_sas2<br>
+          192.168.80.83:/kraz2_prd_sas4
+        </td>
+      </tr>
+
+      <!-- PRD | kr-az2-fas-03r03 (2 rows) -->
+      <tr>
+        <td style="border:1px solid #000; padding:8px; text-align:center;" rowspan="2">PRD</td>
+        <td style="border:1px solid #000; padding:8px; text-align:center;" rowspan="2">kr-az2-fas-03r03</td>
+        <td style="border:1px solid #000; padding:8px;">aggr_fas_node_03r03_01_data</td>
+        <td style="border:1px solid #000; padding:8px; text-align:center;" rowspan="2">kr_az2_fas_03r03_prd_sas</td>
+        <td style="border:1px solid #000; padding:8px;">
+          192.168.80.101:/kraz2_prd_sas5<br>
+          192.168.80.101:/kraz2_prd_sas7
+        </td>
+      </tr>
+      <tr>
+        <td style="border:1px solid #000; padding:8px;">aggr_fas_node_03r03_02_data</td>
+        <td style="border:1px solid #000; padding:8px;">
+          192.168.80.102:/kraz2_prd_sas6<br>
+          192.168.80.102:/kraz2_prd_sas8
+        </td>
+      </tr>
+
+      <!-- PRD | kr-az2-aff-02r02 (2 rows) -->
+      <tr>
+        <td style="border:1px solid #000; padding:8px; text-align:center;" rowspan="2">PRD</td>
+        <td style="border:1px solid #000; padding:8px; text-align:center;" rowspan="2">kr-az2-aff-02r02</td>
+        <td style="border:1px solid #000; padding:8px;">aggr_aff_node_02r02_01_data</td>
+        <td style="border:1px solid #000; padding:8px; text-align:center;" rowspan="2">kr_az2_aff_02r02_stg_ssd</td>
+        <td style="border:1px solid #000; padding:8px;">
+          192.168.80.76:/kraz2_stg_ssd1<br>
+          192.168.80.76:/kraz2_stg_ssd3
+        </td>
+      </tr>
+      <tr>
+        <td style="border:1px solid #000; padding:8px;">aggr_aff_node_02r02_02_data</td>
+        <td style="border:1px solid #000; padding:8px;">
+          192.168.80.77:/kraz2_stg_ssd2<br>
+          192.168.80.77:/kraz2_stg_ssd4
+        </td>
+      </tr>
+
+      <!-- PRD | kr-az2-fas-02r02 (2 rows) -->
+      <tr>
+        <td style="border:1px solid #000; padding:8px; text-align:center;" rowspan="2">PRD</td>
+        <td style="border:1px solid #000; padding:8px; text-align:center;" rowspan="2">kr-az2-fas-02r02</td>
+        <td style="border:1px solid #000; padding:8px;">aggr_fas_node_02r02_01_data</td>
+        <td style="border:1px solid #000; padding:8px; text-align:center;" rowspan="2">kr_az2_fas_02r02_stg_sas</td>
+        <td style="border:1px solid #000; padding:8px;">
+          192.168.80.70:/kraz2_stg_sas1<br>
+          192.168.80.70:/kraz2_stg_sas3
+        </td>
+      </tr>
+      <tr>
+        <td style="border:1px solid #000; padding:8px;">aggr_fas_node_02r02_02_data</td>
+        <td style="border:1px solid #000; padding:8px;">
+          192.168.80.71:/kraz2_stg_sas2<br>
+          192.168.80.71:/kraz2_stg_sas4
+        </td>
+      </tr>
+
     </tbody>
   </table>
 </div>
