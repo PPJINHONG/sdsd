@@ -6,54 +6,72 @@
         <th style="border:1px solid #000; padding:8px; text-align:center;">Name</th>
         <th style="border:1px solid #000; padding:8px; text-align:center;">Aggr_Name</th>
         <th style="border:1px solid #000; padding:8px; text-align:center;">Backend_Name</th>
-        <th style="border:1px solid #000; padding:8px; text-align:center;">Service</th>
+        <th style="border:1px solid #000; padding:8px; text-align:center;">Backend_Volume</th>
         <th style="border:1px solid #000; padding:8px; text-align:center;">Type</th>
       </tr>
     </thead>
 
     <tbody>
       <tr>
-        <td style="border:1px solid #000; padding:8px; text-align:center;">STG</td>
-        <td style="border:1px solid #000; padding:8px; text-align:center;">kr-az2-unity-03r04</td>
-        <td style="border:1px solid #000; padding:8px;">kr_az2_unity_03r04_prd_ssd</td>
-        <td style="border:1px solid #000; padding:8px;">kr_az2_unity_03r04_prd_ssd</td>
-        <td style="border:1px solid #000; padding:8px; text-align:center;">Manila</td>
+        <td style="border:1px solid #000; padding:8px; text-align:center;">PRD</td>
+        <td style="border:1px solid #000; padding:8px; text-align:center;">kr201-blk01-06r05</td>
+        <td style="border:1px solid #000; padding:8px;">kr_az2_a650_06r05_prd_ssd</td>
+        <td style="border:1px solid #000; padding:8px;">kr_az2_a650_06r05_prd_ssd</td>
+        <td style="border:1px solid #000; padding:8px; text-align:center;">-</td>
         <td style="border:1px solid #000; padding:8px; text-align:center;">SSD</td>
       </tr>
 
       <tr>
-        <td style="border:1px solid #000; padding:8px; text-align:center;">STG</td>
-        <td style="border:1px solid #000; padding:8px; text-align:center;">kr-az2-unity-06r05</td>
-        <td style="border:1px solid #000; padding:8px;">kr_az2_unity_06r05_prd_ssd</td>
-        <td style="border:1px solid #000; padding:8px;">kr_az2_unity_06r05_prd_ssd</td>
-        <td style="border:1px solid #000; padding:8px; text-align:center;">Manila</td>
+        <td style="border:1px solid #000; padding:8px; text-align:center;">PRD</td>
+        <td style="border:1px solid #000; padding:8px; text-align:center;">kr201-blk01-06r04</td>
+        <td style="border:1px solid #000; padding:8px;">kr_az2_a650_06r04_prd_ssd</td>
+        <td style="border:1px solid #000; padding:8px;">kr_az2_a650_06r04_prd_ssd</td>
+        <td style="border:1px solid #000; padding:8px; text-align:center;">-</td>
         <td style="border:1px solid #000; padding:8px; text-align:center;">SSD</td>
       </tr>
 
       <tr>
-        <td style="border:1px solid #000; padding:8px; text-align:center;">STG</td>
-        <td style="border:1px solid #000; padding:8px; text-align:center;">kr-az2-unity-06r04</td>
-        <td style="border:1px solid #000; padding:8px;">kr_az2_unity_06r04_prd_ssd</td>
-        <td style="border:1px solid #000; padding:8px;">kr_az2_unity_06r04_prd_ssd</td>
-        <td style="border:1px solid #000; padding:8px; text-align:center;">Manila</td>
+        <td style="border:1px solid #000; padding:8px; text-align:center;">PRD</td>
+        <td style="border:1px solid #000; padding:8px; text-align:center;">kr201-blk01-05r05</td>
+        <td style="border:1px solid #000; padding:8px;">kr_az2_a650_05r05_prd_ssd</td>
+        <td style="border:1px solid #000; padding:8px;">kr_az2_a650_05r05_prd_ssd</td>
+        <td style="border:1px solid #000; padding:8px; text-align:center;">-</td>
         <td style="border:1px solid #000; padding:8px; text-align:center;">SSD</td>
       </tr>
 
       <tr>
-        <td style="border:1px solid #000; padding:8px; text-align:center;">STG</td>
-        <td style="border:1px solid #000; padding:8px; text-align:center;">kr-az2-unity-07r04</td>
-        <td style="border:1px solid #000; padding:8px;">kr_az2_unity_07r04_stg_ssd</td>
-        <td style="border:1px solid #000; padding:8px;">kr_az2_unity_07r04_stg_ssd</td>
-        <td style="border:1px solid #000; padding:8px; text-align:center;">Manila</td>
+        <td style="border:1px solid #000; padding:8px; text-align:center;">PRD</td>
+        <td style="border:1px solid #000; padding:8px; text-align:center;">kr201-blk02-04r05</td>
+        <td style="border:1px solid #000; padding:8px;">kr_az2_a650_04r05_prd_ssd</td>
+        <td style="border:1px solid #000; padding:8px;">kr_az2_a650_04r05_prd_ssd</td>
+        <td style="border:1px solid #000; padding:8px; text-align:center;">-</td>
         <td style="border:1px solid #000; padding:8px; text-align:center;">SSD</td>
       </tr>
 
       <tr>
-        <td style="border:1px solid #000; padding:8px; text-align:center;">STG</td>
-        <td style="border:1px solid #000; padding:8px; text-align:center;">kr-az1-unity-3C1209</td>
-        <td style="border:1px solid #000; padding:8px;">kr101-file01-3C1209</td>
-        <td style="border:1px solid #000; padding:8px;">kr101-file01-3C1209</td>
-        <td style="border:1px solid #000; padding:8px; text-align:center;">Manila</td>
+        <td style="border:1px solid #000; padding:8px; text-align:center;">PRD</td>
+        <td style="border:1px solid #000; padding:8px; text-align:center;">kr201-blk02-05r05</td>
+        <td style="border:1px solid #000; padding:8px;">kr_az2_a650_05r05_prd_ssd_2</td>
+        <td style="border:1px solid #000; padding:8px;">kr_az2_a650_05r05_prd_ssd_2</td>
+        <td style="border:1px solid #000; padding:8px; text-align:center;">-</td>
+        <td style="border:1px solid #000; padding:8px; text-align:center;">SSD</td>
+      </tr>
+
+      <tr>
+        <td style="border:1px solid #000; padding:8px; text-align:center;">PRD</td>
+        <td style="border:1px solid #000; padding:8px; text-align:center;">kr201-blk01-07r04</td>
+        <td style="border:1px solid #000; padding:8px;">kr_az2_a650_07r04_prd_ssd</td>
+        <td style="border:1px solid #000; padding:8px;">kr_az2_a650_07r04_prd_ssd</td>
+        <td style="border:1px solid #000; padding:8px; text-align:center;">-</td>
+        <td style="border:1px solid #000; padding:8px; text-align:center;">SSD</td>
+      </tr>
+
+      <tr>
+        <td style="border:1px solid #000; padding:8px; text-align:center;">PRD</td>
+        <td style="border:1px solid #000; padding:8px; text-align:center;">kr201-blk01-04r05</td>
+        <td style="border:1px solid #000; padding:8px;">kr_az2_a650_07r04_stg_ssd</td>
+        <td style="border:1px solid #000; padding:8px;">kr_az2_a650_07r04_stg_ssd</td>
+        <td style="border:1px solid #000; padding:8px; text-align:center;">-</td>
         <td style="border:1px solid #000; padding:8px; text-align:center;">SSD</td>
       </tr>
     </tbody>
